@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Marvel Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&display=swap">
+<style>
+:root{--bg:#0a0a0c;--cd:#17171b;--rd:#e62429;--tx:#f4f4f5;--mu:#9a9aa3;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:0 16px 96px;max-width:560px;margin:auto}
+h1,h2{font-family:Bangers,Impact,sans-serif;letter-spacing:1px;font-weight:400;margin:0}
+h1{font-size:34px;color:var(--rd);padding:14px 0 2px}h2{font-size:24px;margin:22px 0 10px}
+.sub{color:var(--mu);font-size:14px}
+.bar{height:10px;background:#26262c;border-radius:9px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:var(--rd)}
+.big{font-size:44px;font-weight:800;line-height:1}
+.card{background:var(--cd);border-radius:16px;padding:14px;margin:10px 0}
+.hero{display:flex;gap:14px;background:linear-gradient(135deg,#3a0b0d,var(--cd));border-radius:18px;padding:14px;margin:10px 0;align-items:center}
+.po{flex:none;width:64px;height:92px;border-radius:10px;background:linear-gradient(160deg,var(--c,#e62429)88,#0c0c0e 80%);display:flex;align-items:center;justify-content:center;overflow:hidden}.po span{font-family:Bangers,Impact,sans-serif;font-size:13px;line-height:1.05;text-align:center;padding:5px;text-transform:uppercase;word-break:break-word}
+.hero .po{width:96px;height:138px}.hero .po span{font-size:19px}
+.row{display:flex;gap:12px;align-items:center;background:var(--cd);border-radius:14px;padding:10px;margin:8px 0}.row.w{opacity:.55}
+.in{flex:1;min-width:0}.t{font-weight:700}.m{color:var(--mu);font-size:13px}
+.st button,.ck,.chip,.btn,.tb button{font:inherit;border:0;cursor:pointer}
+.st button{background:none;color:#4a4a52;font-size:22px;padding:2px 3px}.st button.f{color:#ffc933}
+.ck{flex:none;width:44px;height:44px;border-radius:50%;background:#26262c;color:var(--mu);font-size:20px}.w .ck,.ck.on{background:var(--rd);color:#fff}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px}
+.chip{flex:none;padding:9px 16px;border-radius:20px;background:var(--cd);color:var(--mu);font-size:15px}.chip.on{background:var(--rd);color:#fff}
+.btn{background:var(--rd);color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;margin:6px 6px 0 0}.btn.g{background:#26262c}
+input{width:100%;font:inherit;background:var(--cd);color:var(--tx);border:1px solid #2b2b31;border-radius:12px;padding:12px;margin:6px 0}
+.tb{position:fixed;left:0;right:0;bottom:0;display:flex;background:#101013;border-top:1px solid #26262c;padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+.tb button{flex:1;background:none;color:var(--mu);padding:16px 0 14px;font-size:14px}.tb button b{display:block;font-size:22px;font-weight:400}.tb .on{color:var(--rd)}
+.msg{padding:10px 14px;border-radius:16px;margin:8px 0;white-space:pre-wrap;max-width:88%}.u{background:var(--rd);margin-left:auto}.a{background:var(--cd)}
+.days{color:var(--rd);font-weight:800;font-size:13px}
+</style></head><body><div id="app"></div>
+<div class="tb" id="tb"></div>
+<script>
+const U={M:{n:"MCU",c:"#e62429",w:"JioHotstar"},X:{n:"Fox",c:"#ffd23f",w:"JioHotstar"},S:{n:"Sony",c:"#3b82f6",w:"Check Netflix / Prime / JioHotstar"},T:{n:"TV",c:"#a855f7",w:"Check JioHotstar / Netflix"}};
+const D=`M|F|2008|Iron Man|126m|3
+M|F|2008|The Incredible Hulk|112m|5
+M|F|2010|Iron Man 2|124m|4
+M|F|2011|Thor|115m|6
+M|F|2011|Captain America: The First Avenger|124m|1
+M|F|2012|The Avengers|143m|7
+M|F|2013|Iron Man 3|130m|9
+M|F|2013|Thor: The Dark World|112m|8
+M|F|2014|Captain America: The Winter Soldier|136m|10
+M|F|2014|Guardians of the Galaxy|121m|11
+M|F|2015|Avengers: Age of Ultron|141m|13
+M|F|2015|Ant-Man|117m|14
+M|F|2016|Captain America: Civil War|147m|15
+M|F|2016|Doctor Strange|115m|19
+M|F|2017|Guardians of the Galaxy Vol. 2|136m|12
+M|F|2017|Spider-Man: Homecoming|133m|18
+M|F|2017|Thor: Ragnarok|130m|20
+M|F|2018|Black Panther|134m|17
+M|F|2018|Avengers: Infinity War|149m|22
+M|F|2018|Ant-Man and the Wasp|118m|21
+M|F|2019|Captain Marvel|123m|2
+M|F|2019|Avengers: Endgame|181m|23
+M|F|2019|Spider-Man: Far From Home|129m|29
+M|S|2021|WandaVision|9 eps|25
+M|S|2021|The Falcon and the Winter Soldier|6 eps|26
+M|S|2021|Loki (S1)|6 eps|27
+M|F|2021|Black Widow|134m|16
+M|A|2021|What If...? (S1)|9 eps|28
+M|F|2021|Shang-Chi and the Legend of the Ten Rings|132m|31
+M|F|2021|Eternals|156m|32
+M|S|2021|Hawkeye|6 eps|33
+M|F|2021|Spider-Man: No Way Home|148m|30
+M|S|2022|Moon Knight|6 eps|34
+M|F|2022|Doctor Strange in the Multiverse of Madness|126m|35
+M|S|2022|Ms. Marvel|6 eps|36
+M|F|2022|Thor: Love and Thunder|119m|37
+M|S|2022|She-Hulk: Attorney at Law|9 eps|36.5
+M|X|2022|Werewolf by Night|53m|40
+M|F|2022|Black Panther: Wakanda Forever|161m|38
+M|X|2022|Guardians of the Galaxy Holiday Special|44m|41
+M|A|2022|I Am Groot (shorts)|10 shorts|59
+M|F|2023|Ant-Man and the Wasp: Quantumania|125m|39
+M|F|2023|Guardians of the Galaxy Vol. 3|150m|42
+M|S|2023|Secret Invasion|6 eps|43
+M|S|2023|Loki (S2)|6 eps|44
+M|A|2023|What If...? (S2)|9 eps|57
+M|F|2023|The Marvels|105m|45
+M|A|2024|X-Men '97|10 eps|55
+M|A|2024|What If...? (S3)|9 eps|58
+M|S|2024|Echo|5 eps|46
+M|S|2024|Agatha All Along|9 eps|47
+M|F|2024|Deadpool & Wolverine|128m|48
+M|F|2025|Captain America: Brave New World|118m|49
+M|S|2025|Daredevil: Born Again (S1)|9 eps|50
+M|S|2025|Ironheart|6 eps|51
+M|F|2025|Thunderbolts*|127m|52
+M|A|2025|Your Friendly Neighborhood Spider-Man (S1)|10 eps|56
+M|F|2025|The Fantastic Four: First Steps|115m|53
+M|A|2025|Eyes of Wakanda|4 eps|0
+M|A|2025|Marvel Zombies|4 eps|54
+M|S|2026|Wonder Man|8 eps|60
+M|S|2026|Daredevil: Born Again (S2)||61
+M|F|2026-07-31|Spider-Man: Brand New Day||62
+M|S|2026-10-14|VisionQuest||63
+M|A|2026|Your Friendly Neighborhood Spider-Man (S2)||66|Late 2026
+M|F|2026-12-18|Avengers: Doomsday||64
+M|S|2027-03|Daredevil: Born Again (S3)||67|March 2027
+M|F|2027-12-17|Avengers: Secret Wars||65
+M|F|2028-12|Black Panther III||68|Dec 2028
+X|F|2000|X-Men|104m
+X|F|2003|X2: X-Men United|134m
+X|F|2006|X-Men: The Last Stand|104m
+X|F|2009|X-Men Origins: Wolverine|107m
+X|F|2011|X-Men: First Class|132m
+X|F|2013|The Wolverine|126m
+X|F|2014|X-Men: Days of Future Past|132m
+X|F|2016|Deadpool|108m
+X|F|2016|X-Men: Apocalypse|144m
+X|F|2017|Logan|137m
+X|F|2018|Deadpool 2|119m
+X|F|2019|Dark Phoenix|113m
+X|F|2020|The New Mutants|94m
+X|F|2005|Fantastic Four|106m
+X|F|2007|Fantastic Four: Rise of the Silver Surfer|92m
+X|F|2015|Fantastic Four (2015)|100m
+X|S|2017|Legion|27 eps
+X|S|2017|The Gifted|29 eps
+S|F|2002|Spider-Man|121m
+S|F|2004|Spider-Man 2|127m
+S|F|2007|Spider-Man 3|139m
+S|F|2012|The Amazing Spider-Man|136m
+S|F|2014|The Amazing Spider-Man 2|142m
+S|F|2018|Venom|112m
+S|A|2018|Spider-Man: Into the Spider-Verse|117m
+S|F|2021|Venom: Let There Be Carnage|97m
+S|F|2022|Morbius|104m
+S|A|2023|Spider-Man: Across the Spider-Verse|140m
+S|F|2024|Madame Web|116m
+S|F|2024|Kraven the Hunter|127m
+S|F|2024|Venom: The Last Dance|109m
+S|A|2027|Spider-Man: Beyond the Spider-Verse|||2027
+T|L|2013|Agents of S.H.I.E.L.D.|136 eps
+T|S|2015|Agent Carter|18 eps
+T|S|2015|Daredevil (Netflix)|39 eps
+T|S|2015|Jessica Jones|39 eps
+T|S|2016|Luke Cage|26 eps
+T|S|2017|Iron Fist|23 eps
+T|S|2017|The Defenders|8 eps
+T|S|2017|The Punisher|26 eps
+T|S|2017|Runaways|33 eps
+T|S|2017|Inhumans|8 eps
+T|S|2017|Cloak & Dagger|20 eps
+T|S|2020|Helstrom|10 eps`.split("\n").map((l,i)=>{const[u,c,d,n,r,s,b]=l.split("|");return{id:"i"+i,u,c,d,n,r:r||"",s:s?+s:999,tbd:b||""}});
+const EM=[[/spider|venom/i,"🕷️"],[/thor|ragnarok/i,"⚡"],[/iron man|ironheart/i,"🦾"],[/america|winter soldier|civil war/i,"🛡️"],[/hulk/i,"💚"],[/black panther|wakanda/i,"🐾"],[/strange|agatha|wanda|madame web/i,"🔮"],[/guardians|groot/i,"🚀"],[/ant-man/i,"🐜"],[/marvels?$|captain marvel/i,"✨"],[/shang/i,"🐉"],[/eternals/i,"🌌"],[/moon knight/i,"🌙"],[/werewolf|wolverine|logan/i,"🐺"],[/loki/i,"🐍"],[/falcon/i,"🦅"],[/deadpool|punisher/i,"💀"],[/x-men|gifted|legion|mutants/i,"🧬"],[/daredevil|echo/i,"👁️"],[/hawkeye/i,"🏹"],[/black widow/i,"🖤"],[/fantastic/i,"4️⃣"],[/zombies/i,"🧟"],[/invasion/i,"👽"],[/thunderbolts/i,"💣"],[/doomsday|secret wars/i,"☠️"],[/vision/i,"🤖"],[/avengers/i,"⭐"],[/s\.h\.i\.e\.l\.d/i,"🛰️"],[/carter/i,"🎩"],[/jessica/i,"🕵️"],[/luke cage/i,"💪"],[/iron fist/i,"👊"],[/defenders/i,"🤝"],[/runaways/i,"🏃"],[/cloak/i,"🌑"],[/inhumans/i,"👑"],[/helstrom/i,"😈"],[/morbius/i,"🦇"],[/kraven/i,"🦁"],[/she-hulk/i,"⚖️"]];
+const emo=x=>(EM.find(e=>e[0].test(x.n))||[0,"🎬"])[1];
+const ld=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||f)}catch(e){return JSON.parse(f)}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let W=ld("mt-w","{}"),R=ld("mt-r","{}"),tab="home",uni="M",ord="rel",flt="all",q="",grp="date",H=[],sample=null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dt=x=>/^\d{4}-\d{2}-\d{2}$/.test(x.d)?new Date(x.d+"T00:00:00"):null;
+const days=x=>{const d=dt(x);return d?Math.ceil((d-new Date().setHours(0,0,0,0))/864e5):null};
+const out=x=>x.tbd?false:(days(x)===null?+x.d.slice(0,4)<=new Date().getFullYear():days(x)<=0);
+const label=x=>x.tbd||(dt(x)?dt(x).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"}):x.d);
+const CL={F:"Movies",S:"Series",A:"Animated",X:"Other"};
+const save=()=>{sv("mt-w",W);sv("mt-r",R)};
+const po=x=>`<div class="po" style="--c:${U[x.u].c}"><span>${esc(x.n.replace(/\s*\(.*?\)/g,""))}</span></div>`;
+const stars=x=>`<div class="st">${[1,2,3,4,5].map(n=>`<button class="${(R[x.id]||0)>=n?"f":""}" data-s="${n}" data-id="${x.id}">★</button>`).join("")}</div>`;
+const row=x=>`<div class="row ${W[x.id]?"w":""}" style="--c:${U[x.u].c}">${po(x)}<div class="in"><div class="t">${esc(x.n)}</div><div class="m">${esc(x.tbd||x.d.slice(0,4))}${x.r?" · "+esc(x.r):""} · ${esc(U[x.u].w)}</div>${stars(x)}</div><button class="ck" data-ck="${x.id}">✓</button></div>`;
+const next=()=>{const c=D.filter(x=>out(x)&&!W[x.id]);return c.filter(x=>x.u==="M").sort((a,b)=>a.s-b.s)[0]||c[0]};
+function nav(){const T=[["home","🏠","Home"],["lib","🎬","Library"],["up","📅","Upcoming"],["ai","🤖","Jarvis"]];
+ $("#tb").innerHTML=T.map(t=>`<button class="${tab===t[0]?"on":""}" data-tab="${t[0]}">${t[2]}</button>`).join("")}
+const $=s=>document.querySelector(s);
+function libList(){const a=D.filter(x=>x.u===uni&&(flt==="all"||(flt==="w"?W[x.id]:!W[x.id]))&&x.n.toLowerCase().includes(q.toLowerCase()));
+ a.sort((x,y)=>uni==="M"&&ord==="story"?x.s-y.s:0);$("#ls").innerHTML=a.map(row).join("")||'<p class="sub">Nothing here.</p>'}
+function view(){nav();let h="";
+ if(tab==="home"){const n=D.filter(x=>W[x.id]).length,t=D.length,x=next();
+  h=`<h1>MY MARVEL</h1><div class="sub">Your watch progress</div><div class="card"><span class="big">${n}</span> <span class="sub">of ${t} watched</span><div class="bar"><i style="width:${n/t*100}%"></i></div></div>`;
+  if(x)h+=`<h2>Watch this next</h2><div class="hero" style="--c:${U[x.u].c}">${po(x)}<div class="in"><div class="t" style="font-size:19px">${esc(x.n)}</div><div class="m">${esc(x.d.slice(0,4))}${x.r?" · "+esc(x.r):""}<br>On ${esc(U[x.u].w)}</div><button class="btn" data-ck="${x.id}">I watched it ✓</button><button class="btn g" data-ask="Why is ${esc(x.n)} next for me?">Why this?</button></div></div>`;
+  h+=`<h2>By universe</h2><div class="card">`+Object.keys(U).map(u=>{const a=D.filter(x=>x.u===u),d=a.filter(x=>W[x.id]).length;return`<div class="m" style="margin-top:8px">${U[u].n} · ${d}/${a.length}</div><div class="bar"><i style="width:${d/a.length*100}%;background:${U[u].c}"></i></div>`}).join("")+`</div>`}
+ else if(tab==="lib"){h=`<h1>LIBRARY</h1><div class="chips">${Object.keys(U).map(u=>`<button class="chip ${uni===u?"on":""}" data-uni="${u}">${U[u].n}</button>`).join("")}</div>`;
+  if(uni==="M")h+=`<div class="chips"><button class="chip ${ord==="rel"?"on":""}" data-ord="rel">Release order</button><button class="chip ${ord==="story"?"on":""}" data-ord="story">Story order</button></div>`;
+  h+=`<div class="chips">${[["all","All"],["u","Not watched"],["w","Watched"]].map(f=>`<button class="chip ${flt===f[0]?"on":""}" data-flt="${f[0]}">${f[1]}</button>`).join("")}</div><input id="q" placeholder="Search…" value="${esc(q)}"><div id="ls"></div>`}
+ else if(tab==="up"){const a=D.filter(x=>!out(x));h=`<h1>UPCOMING</h1><div class="chips"><button class="chip ${grp==="date"?"on":""}" data-grp="date">Closest first</button><button class="chip ${grp==="type"?"on":""}" data-grp="type">By type</button></div>`;
+  const cd=x=>{const d=days(x);return`<div class="row" style="--c:${U[x.u].c}">${po(x)}<div class="in"><div class="t">${esc(x.n)}</div><div class="m">${esc(label(x))} · ${esc(U[x.u].w)}</div>${d!==null?`<div class="days">in ${d} day${d===1?"":"s"}</div>`:""}</div></div>`};
+  if(grp==="date")h+=a.sort((x,y)=>(days(x)??9e5)-(days(y)??9e5)).map(cd).join("");
+  else for(const c in CL){const b=a.filter(x=>x.c===c);if(b.length)h+=`<h2>${CL[c]}</h2>`+b.map(cd).join("")}
+  if(!a.length)h+='<p class="sub">Nothing upcoming right now.</p>'}
+ else{h=`<h1>JARVIS</h1><div class="sub">Ask me anything about Marvel. I’ll ask before any spoilers.</div><div>${["What should I watch next?","What’s coming soon?","Any fan theories?"].map(t=>`<button class="btn g" data-ask="${t}">${t}</button>`).join("")}</div>`+H.map(m=>`<div class="msg ${m.r}">${esc(m.c)}</div>`).join("")+`<input id="ai" placeholder="Type your question…" enterkeyhint="send">`}
+ $("#app").innerHTML=h;if(tab==="lib")libList()}
+async function ai(p,after){
+ try{
+  const ctx=D.map(x=>x.n+" ["+U[x.u].n+","+x.d+","+(W[x.id]?"watched"+(R[x.id]?" "+R[x.id]+"/5":""):"not watched")+"]").join("; ");
+  const response=await fetch("/.netlify/functions/jarvis",{
+   method:"POST",headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({question:p,context:ctx})
+  });
+  let data={};try{data=await response.json()}catch(e){}
+  if(!response.ok) throw new Error(data.error||("Server error ("+response.status+")"));
+  after(data.answer||"Jarvis received an empty reply. Please try again.");
+ }catch(e){after("Jarvis connection failed: "+(e&&e.message?e.message:"Unknown error")+". Check the Netlify function and ANTHROPIC_API_KEY setting.")}
+}
+function ask(t){if(!t)return;tab="ai";H.push({r:"u",c:t},{r:"a",c:"Thinking…"});view();ai(t,s=>{H[H.length-1].c=s;if(tab==="ai")view()})}
+document.addEventListener("click",e=>{const g=a=>e.target.closest("["+a+"]");let b;
+ if(b=g("data-tab")){tab=b.dataset.tab;view();scrollTo(0,0)}
+ else if(b=g("data-uni")){uni=b.dataset.uni;view()}else if(b=g("data-ord")){ord=b.dataset.ord;view()}
+ else if(b=g("data-flt")){flt=b.dataset.flt;view()}else if(b=g("data-grp")){grp=b.dataset.grp;view()}
+ else if(b=g("data-ask"))ask(b.dataset.ask);
+ else if(b=g("data-s")){const id=b.dataset.id,n=+b.dataset.s;if(R[id]===n)delete R[id];else{R[id]=n;W[id]=1}save();tab==="lib"?libList():view()}
+ else if(b=g("data-ck")){const id=b.dataset.ck;if(W[id]){delete W[id];delete R[id]}else W[id]=1;save();tab==="lib"?libList():view()}});
+document.addEventListener("input",e=>{if(e.target.id==="q"){q=e.target.value;libList()}});
+document.addEventListener("keydown",e=>{if(e.target.id==="ai"&&e.key==="Enter"){const t=e.target.value.trim();ask(t)}});
+view();
+</script></body></html>
